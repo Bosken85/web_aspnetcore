@@ -32,10 +32,15 @@ namespace Digipolis.Web.Api
 
             try
             {
+                Tuple<string, Type> result;
                 Monitor.Enter(BuiltTypes);
                 string typeKey = GetTypeKey(fields);
 
-                if (BuiltTypes.ContainsKey(typeKey)) return BuiltTypes[typeKey].Item2;
+                if (BuiltTypes.ContainsKey(typeKey))
+                {
+                    if(!BuiltTypes.TryGetValue(typeKey, out result)) throw new ArgumentOutOfRangeException();
+                    return result.Item2;
+                }
 
                 string typeName = $"DynamicLinqType{BuiltTypes.Count}";
                 TypeBuilder typeBuilder = ModuleBuilder.DefineType(typeName, TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Serializable, null, Type.EmptyTypes);
@@ -43,9 +48,9 @@ namespace Digipolis.Web.Api
                 foreach (var field in fields)
                     typeBuilder.DefineField(field.Key, field.Value, FieldAttributes.Public);
 
-                BuiltTypes[typeKey] = new Tuple<string, Type>(typeName, typeBuilder.CreateTypeInfo().AsType());
-
-                return BuiltTypes[typeKey].Item2;
+                result = new Tuple<string, Type>(typeName, typeBuilder.CreateTypeInfo().AsType());
+                BuiltTypes.TryAdd(typeKey, result); 
+                return result.Item2;
             }
             catch
             {
