@@ -1,5 +1,10 @@
 # Web Toolbox
 
+## 4.0.2
+
+- Added dynamic field selection to API all the way to the repositories for smaller selection set on the database
+- Updated examples accordingly
+
 ## 4.0.1
 
 - Bugfix : HAL querystring "?" was encoded

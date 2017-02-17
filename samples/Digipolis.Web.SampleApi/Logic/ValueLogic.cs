@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Digipolis.Web.Api;
 using Digipolis.Web.SampleApi.Data;
@@ -21,14 +22,29 @@ namespace Digipolis.Web.SampleApi.Logic
 
         public IEnumerable<ValueDto> GetAll(PageOptions queryOptions, out int total)
         {
-            var result = _valueRepository.GetAll(queryOptions, out total);
-            return _mapper.Map<IEnumerable<Value>, IEnumerable<ValueDto>>(result);
+            var result = _valueRepository.GetAll<ValueDto>(queryOptions, out total);
+            return result;
+        }
+
+        public IEnumerable<object> GetAll(PageOptions queryOptions, out int total, params string[] fields)
+        {
+            return fields != null && fields.Any() 
+                ? _valueRepository.GetAll<ValueDto>(queryOptions, out total, fields)
+                : _valueRepository.GetAll<ValueDto>(queryOptions, out total);
         }
 
         public ValueDto GetById(int id)
         {
             if (id < 0) throw new ArgumentOutOfRangeException();
-            return _mapper.Map<Value, ValueDto>(_valueRepository.GetById(id));
+            return _valueRepository.GetById<ValueDto>(id);
+        }
+
+        public object GetById(int id, params string[] fields)
+        {
+            if (id < 0) throw new ArgumentOutOfRangeException();
+            return fields != null && fields.Any()
+                ? _valueRepository.GetById<ValueDto>(id, fields)
+                : _valueRepository.GetById<ValueDto>(id);
         }
 
         public ValueDto Add(ValueDto value)

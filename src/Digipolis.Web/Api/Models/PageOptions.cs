@@ -8,7 +8,7 @@ namespace Digipolis.Web.Api
     /// <summary>
     /// Options for paging Api results
     /// </summary>
-    public class PageOptions
+    public class PageOptions : QueryOptions
     {
         /// <summary>
         /// Retrieve page

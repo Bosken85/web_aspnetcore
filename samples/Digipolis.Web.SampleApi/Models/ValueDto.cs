@@ -24,7 +24,7 @@ namespace Digipolis.Web.SampleApi.Models
         /// <summary>
         /// The type of Value
         /// </summary>
-        public ValueTypeDto ValueType { get; set; }
+        //public ValueTypeDto ValueType { get; set; }
 
         /// <summary>
         /// Creation date and time

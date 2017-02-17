@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using Digipolis.Errors.Exceptions;
 using Digipolis.Web.Api;
@@ -39,10 +40,9 @@ namespace Digipolis.Web.SampleApi.Controllers
         [Versions(Versions.V1, Versions.V2)]
         [Produces("application/hal+json")]
         public IActionResult Get([FromQuery]CriteriaDto criteria)
-        {
+       {
             int total;
-            var values = _valueLogic.GetAll(criteria, out total);
-            //var result = queryOptions.ToPagedResult(values, total, "kevin", new { test = 0 });
+            var values = _valueLogic.GetAll(criteria, out total, criteria.Fields);
             var result = criteria.ToPagedResult(values, total, "Get", "Values", new { test = 0 });
             return Ok(result);
         }
@@ -58,9 +58,9 @@ namespace Digipolis.Web.SampleApi.Controllers
         [AllowAnonymous]
         [Versions(Versions.V1, Versions.V2)]
         [Produces("application/json", "text/csv")]
-        public IActionResult Get(int id)
+        public IActionResult Get(int id, [FromQuery]QueryOptions query)
         {
-            var value = _valueLogic.GetById(id);
+            var value = _valueLogic.GetById(id, query.Fields);
             return Ok(value);
         }
 

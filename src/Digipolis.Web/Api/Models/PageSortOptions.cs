@@ -13,5 +13,7 @@ namespace Digipolis.Web.Api
         /// Default sorting is ascending, for descending add a -(minus) sign before the field.
         /// </summary>
         public string[] Sort { get; set; } = new string[0];
+
+
     }
 }

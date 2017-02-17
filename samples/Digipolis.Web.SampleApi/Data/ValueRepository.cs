@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper.QueryableExtensions;
 using Digipolis.Errors.Exceptions;
 using Digipolis.Web.Api;
 using Digipolis.Web.SampleApi.Data.Entiteiten;
@@ -21,18 +22,38 @@ namespace Digipolis.Web.SampleApi.Data
 
         private static IQueryable<Value> Table => Values.AsQueryable();
 
-        public IEnumerable<Value> GetAll(PageOptions queryOptions, out int total)
+
+        public IEnumerable<TSelect> GetAll<TSelect>(PageOptions queryOptions, out int total) where TSelect : class, new()
         {
             total = Table.Count();
-            var query = Table.Skip((queryOptions.Page - 1)*queryOptions.PageSize).Take(queryOptions.PageSize);
+            var query = Table
+                .ProjectTo<TSelect>()
+                .Skip((queryOptions.Page - 1) * queryOptions.PageSize)
+                .Take(queryOptions.PageSize);
             return query;
         }
 
-        public Value GetById(int id)
+        public IEnumerable<dynamic> GetAll<TSelect>(PageOptions queryOptions, out int total, params string[] fields) where TSelect : class, new()
         {
-            if (Table.All(x => x.Id != id))
-                throw new NotFoundException();
-            return Table.FirstOrDefault(x => x.Id == id);
+            total = Table.Count();
+            var query = Table
+                .ProjectTo<TSelect>()
+                .SelectPartially(fields)
+                .Skip((queryOptions.Page - 1) * queryOptions.PageSize)
+                .Take(queryOptions.PageSize);
+            return query;
+        }
+
+        public TSelect GetById<TSelect>(int id) where TSelect : class, new()
+        {
+            if (Table.All(x => x.Id != id)) throw new NotFoundException();
+            return Table.Where(x => x.Id == id).ProjectTo<TSelect>().FirstOrDefault();
+        }
+
+        public dynamic GetById<TSelect>(int id, params string[] fields) where TSelect : class, new()
+        {
+            if (Table.All(x => x.Id != id)) throw new NotFoundException();
+            return Table.Where(x => x.Id == id).ProjectTo<TSelect>().SelectPartially(fields).FirstOrDefault();
         }
 
         public Value Add(Value value)
@@ -69,6 +90,11 @@ namespace Digipolis.Web.SampleApi.Data
                 throw new NotFoundException();
 
             Values.Remove(Values.Find(x => x.Id == id));
+        }
+
+        public void Delete(Value entity)
+        {
+            if(entity == null) throw new ArgumentNullException(nameof(entity));
         }
     }
 }
