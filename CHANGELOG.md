@@ -1,5 +1,15 @@
 # Web Toolbox
 
+## 4.0.1
+
+- Bugfix : HAL querystring "?" was encoded
+
+## 4.0.0
+
+- HAL Url generation is now based on Request host information.
+- Added support for X-Forwarded-For, X-Forwarded-Host and X-Forwarded-Proto headers.
+- Updated reference to Digipolis.Error toolbox (breaking change)
+
 ## 3.0.6
 
 - Register CommaDelimitedModelBinder automatically
@@ -46,4 +56,5 @@
 
 ## 1.0.0
 
-- initial version
+- added support for application/hal+json MIME-type
+- added ModelBuilder for comma serperated arrays
